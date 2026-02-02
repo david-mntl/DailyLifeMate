@@ -1,0 +1,33 @@
+{
+  "folders": [
+    {
+      "name": "DailyLifeMate - Backend",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "editor.formatOnSave": true
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug API",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "build",
+        "program": "${workspaceFolder}/DailyLifeMate.Api/bin/Debug/net8.0/DailyLifeMate.Api.dll",
+        "args": [],
+        "cwd": "${workspaceFolder}/",
+        "stopAtEntry": false,
+        "serverReadyAction": {
+          "action": "openExternally",
+          "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+        },
+        "env": {
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      }
+    ]
+  }
+}

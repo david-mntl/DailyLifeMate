@@ -1,0 +1,34 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    container_name: dailylifemate-api
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Default=Host=db;Port=5432;Database=dailylifemate;Username=dlm;Password=dlm123
+    depends_on:
+      - db
+    volumes:
+      - ./src:/workspace/src
+      - ~/.nuget/packages:/root/.nuget/packages
+
+  db:
+    image: postgres:15
+    container_name: dailylifemate-db
+    environment:
+      POSTGRES_DB: dailylifemate
+      POSTGRES_USER: dlm
+      POSTGRES_PASSWORD: dlm123
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
