@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using DailyLifeMate.Infrastructure.Database;
 using Microsoft.Extensions.Configuration;
 using DailyLifeMate.Api.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 // Using new standard way to init a program (All in program.cs as a script file)
 var builder = WebApplication.CreateBuilder(args);
@@ -18,7 +19,7 @@ builder.Services.AddEngineServices();
 // --------------------------
 
 // Setting up DB (PostgreSQL)
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString("Default");
 builder.Services.AddDbContext<DailyLifeMateDbContext>(options =>
     options.UseNpgsql(connectionString));
 

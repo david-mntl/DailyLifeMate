@@ -25,6 +25,8 @@ public class DailyLifeMateDbContext : DbContext
         {
             entity.ToTable("Contexts");
             entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Description).HasMaxLength(500);
         });
 
         // --- PARENT CONFIGURATION (DashboardItem) ---
@@ -40,11 +42,6 @@ public class DailyLifeMateDbContext : DbContext
             // Enum Mapping: Store Enums as Strings in the DB (Readable!)
             entity.Property(e => e.Status).HasConversion<string>().HasMaxLength(50);
             entity.Property(e => e.Type).HasConversion<string>().HasMaxLength(50);
-
-            // Tells EF which class to instantiate based on the "Type" column
-            entity.HasDiscriminator(e => e.Type)
-                  .HasValue<Anime>(ItemType.Anime);
-            // Future: .HasValue<Fitness>(ItemType.Fitness);
 
             // Storing the List<ExternalLink> as a JSON document
             entity.Property(e => e.ExternalLinks).HasColumnType("jsonb");
