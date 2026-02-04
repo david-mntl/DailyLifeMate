@@ -1,3 +1,5 @@
+using System;
+
 namespace DailyLifeMate.Domain.Core.Models;
 
 public class ExternalLink
@@ -10,5 +12,5 @@ public class ExternalLink
     public int Priority { get; set; } = 1;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public Item Item { get; set; } = null!;
+    public DashboardItem Item { get; set; } = null!;
 }

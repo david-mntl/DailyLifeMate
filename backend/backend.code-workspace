@@ -8,6 +8,23 @@
   "settings": {
     "editor.formatOnSave": true
   },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "build",
+        "command": "dotnet",
+        "type": "process",
+        "args": [
+          "build",
+          "${workspaceFolder}/src/DailyLifeMate.csproj",
+          "/property:GenerateFullPaths=true",
+          "/consoleloggerparameters:NoSummary"
+        ],
+        "problemMatcher": "$msCompile"
+      }
+    ]
+  },
   "launch": {
     "version": "0.2.0",
     "configurations": [
@@ -16,10 +33,9 @@
         "type": "coreclr",
         "request": "launch",
         "preLaunchTask": "build",
-        "program": "${workspaceFolder}/DailyLifeMate.Api/bin/Debug/net8.0/DailyLifeMate.Api.dll",
+        "program": "${workspaceFolder}/src/bin/Debug/net8.0/DailyLifeMate.dll",
         "args": [],
         "cwd": "${workspaceFolder}/",
-        "stopAtEntry": false,
         "serverReadyAction": {
           "action": "openExternally",
           "pattern": "\\bNow listening on:\\s+(https?://\\S+)"

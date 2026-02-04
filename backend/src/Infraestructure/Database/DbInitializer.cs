@@ -1,28 +1,25 @@
-namespace DailyLifeMate.Infrastructure.Database;
+using System.Linq;
+using DailyLifeMate.Domain.Core;
 
-using DailyLifeMate.Domain.Core.Enums;
-using DailyLifeMate.Domain.Core.Models;
+namespace DailyLifeMate.Infrastructure.Database;
 
 public static class DbInitializer
 {
-    public static void Seed(DailyLifeMateDbContext context)
+    public static void Initialize(DailyLifeMateDbContext context)
     {
-        // Ensure the database is created
         context.Database.EnsureCreated();
 
-        // Check if the Anime context already exists
-        if (!context.Contexts.Any(c => c.Type == ContextType.Anime))
-        {
-            context.Contexts.Add(new Context
-            {
-                Id = Guid.NewGuid(),
-                Type = ContextType.Anime,
-                Name = "Anime Dashboard",
-                Description = "Context for tracking anime that is being watched.",
-                CreatedAt = DateTime.UtcNow
-            });
+        if (context.Contexts.Any()) return;
 
-            context.SaveChanges();
-        }
+        // We create the "Empty Folder" for your Anime feature
+        var animeDashboard = new Context
+        {
+            Id = System.Guid.NewGuid(),
+            Name = "Anime Dashboard",
+            Description = "Personal current anime watch list."
+        };
+
+        context.Contexts.Add(animeDashboard);
+        context.SaveChanges();
     }
 }

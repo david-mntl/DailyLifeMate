@@ -1,4 +1,7 @@
-using DailyLifeMate.Engine.Services;
+
+using DailyLifeMate.Domain.Features.Anime;
+using DailyLifeMate.Domain.Features.Services.Anime;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DailyLifeMate.Engine;
 
@@ -8,7 +11,6 @@ public static class ConfigureServices
     {
         // Adding services Services
         services.AddScoped<IAnimeService, AnimeService>();
-        
         return services;
     }
 }

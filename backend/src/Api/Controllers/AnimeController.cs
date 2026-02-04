@@ -1,5 +1,10 @@
-using DailyLifeMate.Domain.DTOs;
-using DailyLifeMate.Engine.Services;
+
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using DailyLifeMate.Domain.Exceptions;
+using DailyLifeMate.Domain.Features.Services.Anime;
+using DailyLifeMate.Engine.Features.Anime.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DailyLifeMate.Api.Controllers;
@@ -35,8 +40,8 @@ public class AnimeController : ControllerBase
         try
         {
             var result = await _animeService.CreateAnimeAsync(request);
-            
-            return CreatedAtAction(nameof(GetAll), new { id = result.Id }, result);
+
+            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
         catch (ArgumentException ex)
         {

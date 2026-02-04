@@ -1,65 +1,75 @@
-using DailyLifeMate.Domain.Core;
 using Microsoft.EntityFrameworkCore;
+using DailyLifeMate.Domain.Features.Anime;
+using DailyLifeMate.Domain.Core.Models;
+using DailyLifeMate.Domain.Core;
 
-namespace DailyLifeMate.Infrastructure.Persistence;
-
+namespace DailyLifeMate.Infrastructure.Database;
 
 public class DailyLifeMateDbContext : DbContext
 {
-    // Configuration 
-    public DailyLifeMateDbContext(DbContextOptions<DailyLifeMateDbContext> options) 
+    public DailyLifeMateDbContext(DbContextOptions<DailyLifeMateDbContext> options)
         : base(options) { }
 
-    // DB Tables
+    // Table Definitions
+    public DbSet<DashboardItem> DashboardItems => Set<DashboardItem>();
+    public DbSet<Anime> Animes => Set<Anime>();
     public DbSet<Context> Contexts => Set<Context>();
-    public DbSet<Item> Items => Set<Item>();
-    public DbSet<ItemMetadata> ItemMetadatas => Set<ItemMetadata>();
 
-    // Defines the DB rules
+    // The Rules (Configuration)
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        // 1. Configure Context (The Category)
-        modelBuilder.Entity<Context>(context =>
+        // Context Table
+        modelBuilder.Entity<Context>(entity =>
         {
-            context.HasKey(e => e.Id);
-            // Convert Enum to a string in the DB
-            context.Property(e => e.Type)
-                  .HasConversion<string>()
-                  .HasMaxLength(50);
-            
-            context.HasIndex(e => e.Type).IsUnique();
+            entity.ToTable("Contexts");
+            entity.HasKey(e => e.Id);
         });
 
-        // 2. Configure Item (The Feature)
-        modelBuilder.Entity<Item>(item =>
+        // --- PARENT CONFIGURATION (DashboardItem) ---
+        modelBuilder.Entity<DashboardItem>(entity =>
         {
-            item.HasKey(e => e.Id);
-            item.Property(e => e.Title).IsRequired().HasMaxLength(255);
-            
-            // Relationship: Item belongs to one Context
-            item.HasOne(i => i.Context)
+            // Table-Per-Type (TPT): This is the main table
+            entity.ToTable("DashboardItems");
+
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Title).IsRequired().HasMaxLength(255);
+            entity.Property(e => e.Description).HasMaxLength(1000);
+
+            // Enum Mapping: Store Enums as Strings in the DB (Readable!)
+            entity.Property(e => e.Status).HasConversion<string>().HasMaxLength(50);
+            entity.Property(e => e.Type).HasConversion<string>().HasMaxLength(50);
+
+            // Tells EF which class to instantiate based on the "Type" column
+            entity.HasDiscriminator(e => e.Type)
+                  .HasValue<Anime>(ItemType.Anime);
+            // Future: .HasValue<Fitness>(ItemType.Fitness);
+
+            // Storing the List<ExternalLink> as a JSON document
+            entity.Property(e => e.ExternalLinks).HasColumnType("jsonb");
+
+            // Relationship setup
+            entity.HasOne(d => d.Context)
                   .WithMany(c => c.Items)
-                  .HasForeignKey(i => i.ContextId);
+                  .HasForeignKey(d => d.ContextId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
-        // 3. Configure Metadata
-        modelBuilder.Entity<ItemMetadata>(metadata =>
+        // --- CHILD CONFIGURATION (Anime) ---
+        modelBuilder.Entity<Anime>(entity =>
         {
-            metadata.HasKey(e => e.Id);
-            
-            // Composite Index for speed: makes looking up keys for an item very fast
-            metadata.HasIndex(e => new { e.ItemId, e.Key }).IsUnique();
+            // Table-Per-Type (TPT): This table shares the SAME ID as DashboardItems
+            entity.ToTable("Animes");
 
-            metadata.Property(e => e.Key).HasMaxLength(100);
-            metadata.Property(e => e.Value).HasMaxLength(1000);
+            // Database Constraints for data integrity
+            entity.Property(e => e.TotalEpisodes).HasDefaultValue(0);
+            entity.Property(e => e.CurrentEpisodes).HasDefaultValue(0);
+            entity.Property(e => e.LastWatchedEpisode).HasDefaultValue(0);
+            entity.Property(e => e.AiringStatus).HasMaxLength(50);
 
-            // Relationship: Metadata belongs to one Item
-            metadata.HasOne(m => m.Item)
-                  .WithMany(i => i.Metadata)
-                  .HasForeignKey(m => m.ItemId)
-                  .OnDelete(DeleteBehavior.Cascade); // Delete item = delete metadata
+            // JSONB MAPPING: Storing List<string> genres as a JSON document
+            entity.Property(e => e.Genres).HasColumnType("jsonb");
         });
     }
 }

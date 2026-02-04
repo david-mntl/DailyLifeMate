@@ -1,7 +1,7 @@
-
-public enum ContextType
+public enum ItemType
 {
     Anime,
     Fitness, // Future
-    Tasks    // Future
+    Task,    // Future
+    General
 }

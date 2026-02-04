@@ -1,16 +1,14 @@
-namespace DailyLifeMate.Domain.Core.Models;
+using System.Collections.Generic;
+using DailyLifeMate.Domain.Core.Models;
+
+namespace DailyLifeMate.Domain.Core;
 
 public class Context
 {
-    public Guid Id { get; set; }
-    public Guid UserId { get; set; }
+    public System.Guid Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
 
-    public ContextType Type { get; set; }
-
-    public string Name { get; set; } = null!;
-    public string? Description { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    
-    public User User { get; set; } = null!;
-    public List<Item> Items { get; set; } = new List<Item>();
+    // Navigation property: One context can hold many different items
+    public List<DashboardItem> Items { get; set; } = new();
 }
