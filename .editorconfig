@@ -1,0 +1,110 @@
+root = true
+
+# ========================================
+# Global
+# ========================================
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# ========================================
+# C# files
+# ========================================
+[*.cs]
+# --- C# Formatting Rules ---
+indent_size = 4
+
+# Style Rules: Clarity over Brevity
+csharp_style_var_when_type_is_apparent = false:suggestion
+
+# Modern C# "Flat" namespaces
+csharp_style_namespace_declarations = file_scoped:warning
+
+# Avoid "this."
+dotnet_style_qualification_for_field = false:suggestion
+dotnet_style_qualification_for_property = false:suggestion
+dotnet_style_qualification_for_method = false:suggestion
+dotnet_style_qualification_for_event = false:suggestion
+
+# Organize Usings
+dotnet_separate_import_directive_groups = true
+dotnet_sort_system_directives_first = true
+
+# --- Naming Conventions ---
+
+# Interfaces
+dotnet_naming_rule.interface_should_be_begun_with_i.symbols = interface_symbols
+dotnet_naming_rule.interface_should_be_begun_with_i.style = interface_style
+dotnet_naming_rule.interface_should_be_begun_with_i.severity = suggestion
+dotnet_naming_symbols.interface_symbols.applicable_kinds = interface
+dotnet_naming_style.interface_style.required_prefix = I
+dotnet_naming_style.interface_style.capitalization = pascal_case
+
+# Private fields (_camelCase)
+dotnet_naming_rule.private_fields_with_underscore.symbols = private_fields
+dotnet_naming_rule.private_fields_with_underscore.style = prefix_underscore
+dotnet_naming_rule.private_fields_with_underscore.severity = suggestion
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+dotnet_naming_style.prefix_underscore.capitalization = camel_case
+dotnet_naming_style.prefix_underscore.required_prefix = _
+
+# Parameters & Locals (camelCase)
+dotnet_naming_rule.camel_case_for_locals_and_params.symbols = locals_and_params
+dotnet_naming_rule.camel_case_for_locals_and_params.style = camel_case_style
+dotnet_naming_rule.camel_case_for_locals_and_params.severity = suggestion
+dotnet_naming_symbols.locals_and_params.applicable_kinds = parameter, local
+dotnet_naming_style.camel_case_style.capitalization = camel_case
+
+# Methods, Classes, Properties (PascalCase)
+dotnet_naming_rule.pascal_case_for_public.symbols = public_members
+dotnet_naming_rule.pascal_case_for_public.style = pascal_case_style
+dotnet_naming_rule.pascal_case_for_public.severity = suggestion
+dotnet_naming_symbols.public_members.applicable_kinds = method, property, class, struct, enum, event
+dotnet_naming_style.pascal_case_style.capitalization = pascal_case
+
+# --- Spacing & Newlines ---
+csharp_space_after_cast = false
+csharp_space_after_keywords_in_control_flow_statements = true
+csharp_space_between_parentheses = false
+csharp_space_before_colon_in_inheritance_clause = true
+csharp_space_after_colon_in_inheritance_clause = true
+csharp_space_around_binary_operators = before_and_after
+
+# The Allman Style (Braces on new lines)
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+csharp_new_line_before_members_in_object_initializers = true
+csharp_new_line_between_query_expression_clauses = true
+
+# ========================================
+# JSON / YAML
+# ========================================
+[*.json]
+indent_size = 2
+
+[*.yml]
+indent_size = 2
+
+# ========================================
+# Shell scripts
+# ========================================
+[*.{sh}]
+indent_size = 2
+end_of_line = lf
+
+# ========================================
+# Docker
+# ========================================
+[Dockerfile]
+indent_size = 2
+
+# ========================================
+# Markdown
+# ========================================
+[*.md]
+trim_trailing_whitespace = false
