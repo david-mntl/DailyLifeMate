@@ -1,0 +1,26 @@
+{
+  "name": "DailyLifeMate Dev Container",
+  "dockerComposeFile": [
+    "docker-compose.dev.yml"
+  ],
+  "service": "backend",
+  "workspaceFolder": "/workspace/backend",
+
+  "customizations": {
+    "vscode": {
+      "setings": 
+      {
+        "dotnet.defaultSolution": "backend.sln"
+      },
+      "extensions": [
+          "ms-dotnettools.csharp",
+          "ms-dotnettools.csdevkit",
+          "ms-dotnettools.vscode-dotnet-runtime",
+          "ms-azuretools.vscode-docker",
+          "esbenp.prettier-vscode"
+      ]
+    }
+  },
+  "forwardPorts": [],
+  "remoteUser": "vscode"
+}
