@@ -4,6 +4,7 @@ WORKDIR /workspace
 
 # Install common tools
 RUN apt-get update && apt-get install -y \
+    vim \
     git \
     curl \
     unzip \

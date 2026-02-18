@@ -6,11 +6,19 @@
   "service": "backend",
   "workspaceFolder": "/workspace/backend",
 
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "configureZshAsDefaultShell": true
+    }
+  },
+  
   "customizations": {
     "vscode": {
       "setings": 
       {
-        "dotnet.defaultSolution": "backend.sln"
+        "dotnet.defaultSolution": "backend.sln",
+        "terminal.integrated.defaultProfile.linux": "zsh"
       },
       "extensions": [
           "ms-dotnettools.csharp",

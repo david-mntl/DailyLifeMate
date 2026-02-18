@@ -35,7 +35,7 @@
         "preLaunchTask": "build",
         "program": "${workspaceFolder}/src/bin/Debug/net8.0/DailyLifeMate.dll",
         "args": [],
-        "cwd": "${workspaceFolder}/",
+        "cwd": "${workspaceFolder}/src",
         "serverReadyAction": {
           "action": "openExternally",
           "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
