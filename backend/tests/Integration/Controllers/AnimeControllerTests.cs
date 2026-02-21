@@ -32,8 +32,7 @@ public class AnimeControllerTests : DBSetupFixtureBase
         var request = new CreateAnimeRequestDto
         {
             Name = "Test Anime",
-            Description = "A test anime description",
-            TotalEpisodes = 12
+            Description = "A test anime description"
         };
 
         // Act
@@ -47,18 +46,69 @@ public class AnimeControllerTests : DBSetupFixtureBase
         content.Should().NotBeNull();
         content!.Name.Should().Be(request.Name);
         content.Description.Should().Be(request.Description);
-        content.TotalEpisodes.Should().Be(request.TotalEpisodes);
-        content.ContextName.Should().Be(AnimeContextName); // Verified via the new Service logic
+        content.ContextName.Should().Be(AnimeContextName);
+
+        // Assertions proving the AnimeMetadataProvider was called, using our shared constants!
+        content.TotalEpisodes.Should().Be(FakeAnimeMetadataProvider.FakeTotalEpisodes);
+        content.Synopsis.Should().Be(FakeAnimeMetadataProvider.FakeSynopsis);
+        content.ImageUrl.Should().Be(FakeAnimeMetadataProvider.FakeImageUrl);
+        content.AiringStatus.Should().Be(FakeAnimeMetadataProvider.FakeAiringStatus);
+        content.Genres.Should().ContainInOrder(FakeAnimeMetadataProvider.FakeGenres);
 
         // Verify Record in Database
-        // AsNoTracking to ensure to get fresh data from DB, not cache
         var animeInDb = await _dbContext.Animes
             .AsNoTracking()
             .FirstOrDefaultAsync(a => a.Id == content.Id);
 
         animeInDb.Should().NotBeNull();
         animeInDb!.Name.Should().Be(request.Name);
-        animeInDb.TotalEpisodes.Should().Be(12);
+        animeInDb.Description.Should().Be(request.Description);
+
+        // Ensure it saved the enriched data to Postgres seamlessly
+        animeInDb.TotalEpisodes.Should().Be(FakeAnimeMetadataProvider.FakeTotalEpisodes);
+        animeInDb.Synopsis.Should().Be(FakeAnimeMetadataProvider.FakeSynopsis);
+    }
+
+    [Test]
+    public async Task CreateAsync_WhenMetadataProviderReturnsNull_CreatesRecordWithFallbackData()
+    {
+        // Arrange
+        var request = new CreateAnimeRequestDto
+        {
+            // The "NotFound" keyword triggers our FakeAnimeMetadataProvider to return null
+            Name = "Obscure Anime NotFound",
+            Description = "A highly obscure anime that the external API doesn't know about."
+        };
+
+        // Act
+        var response = await _httpClient.PostAsJsonAsync(BaseUrl, request);
+        var content = await response.Content.ReadFromJsonAsync<AnimeDto>();
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        content.Should().NotBeNull();
+        content!.Name.Should().Be(request.Name);
+        content.Description.Should().Be(request.Description);
+
+        // Because the provider failed, these should all default to empty/zero
+        content.TotalEpisodes.Should().Be(0);
+        content.CurrentAvailableEpisodes.Should().Be(0);
+        content.Synopsis.Should().BeEmpty();
+        content.ImageUrl.Should().BeEmpty();
+        content.AiringStatus.Should().BeEmpty();
+        content.Genres.Should().BeEmpty();
+        content.ReleasedOn.Should().BeNull();
+
+        var animeInDb = await _dbContext.Animes
+            .AsNoTracking()
+            .FirstOrDefaultAsync(a => a.Id == content.Id);
+
+        animeInDb.Should().NotBeNull();
+        animeInDb!.Name.Should().Be(request.Name);
+        animeInDb.Description.Should().Be(request.Description);
+        animeInDb.TotalEpisodes.Should().Be(0);
+        animeInDb.Synopsis.Should().BeEmpty();
+        animeInDb.Genres.Should().BeEmpty();
     }
 
     [Test]
@@ -68,8 +118,7 @@ public class AnimeControllerTests : DBSetupFixtureBase
         // Anonymos object to simulate missing property 'Name'.
         var request = new
         {
-            Description = "TestDescription",
-            TotalEpisodes = 4,
+            Description = "TestDescription"
         };
 
         // Act
@@ -100,7 +149,7 @@ public class AnimeControllerTests : DBSetupFixtureBase
             Name = "Hunter X Hunter",
             Description = "Hunter anime",
             TotalEpisodes = 148,
-            CurrentEpisodes = 148,
+            CurrentAvailableEpisodes = 148,
             ExternalLinks = new List<ExternalLink>()
         };
 
