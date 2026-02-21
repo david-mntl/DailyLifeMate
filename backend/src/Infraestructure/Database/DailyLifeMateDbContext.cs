@@ -58,11 +58,10 @@ public class DailyLifeMateDbContext : DbContext
         {
             // Table-Per-Type (TPT): This table shares the SAME ID as DashboardItems
             entity.ToTable("Animes");
+            entity.Property(e => e.Synopsis).HasMaxLength(2000);
+            entity.Property(e => e.ImageUrl).HasMaxLength(500);
+            entity.Property(e => e.CurrentAvailableEpisodes).HasDefaultValue(0);
 
-            // Database Constraints for data integrity
-            entity.Property(e => e.TotalEpisodes).HasDefaultValue(0);
-            entity.Property(e => e.CurrentEpisodes).HasDefaultValue(0);
-            entity.Property(e => e.LastWatchedEpisode).HasDefaultValue(0);
             entity.Property(e => e.AiringStatus).HasMaxLength(50);
 
             // JSONB MAPPING: Storing List<string> genres as a JSON document
