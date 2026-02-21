@@ -6,13 +6,13 @@ namespace DailyLifeMate.Infrastructure.ExternalApis.Jikan;
 // REMARKS:
 // - Only map the fields that are actually interesting for the case. Jikan returns a ton of data.
 // - Marked internal even if it is a monolith project: To explicit express "Do not use this outside of Infrastructure!"
-internal class JikanSearchResponse
+internal record JikanSearchResponse
 {
     [JsonPropertyName("data")]
     public List<JikanAnimeData> Data { get; set; } = [];
 }
 
-internal class JikanAnimeData
+internal record JikanAnimeData
 {
     [JsonPropertyName("title")]
     public string Title { get; set; } = string.Empty;
@@ -36,25 +36,25 @@ internal class JikanAnimeData
     public List<JikanGenre> Genres { get; set; } = [];
 }
 
-internal class JikanAired
+internal record JikanAired
 {
     [JsonPropertyName("from")]
     public System.DateTime? From { get; set; }
 }
 
-internal class JikanImages
+internal record JikanImages
 {
     [JsonPropertyName("jpg")]
     public JikanJpg? Jpg { get; set; }
 }
 
-internal class JikanJpg
+internal record JikanJpg
 {
     [JsonPropertyName("large_image_url")]
     public string? LargeImageUrl { get; set; }
 }
 
-internal class JikanGenre
+internal record JikanGenre
 {
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;

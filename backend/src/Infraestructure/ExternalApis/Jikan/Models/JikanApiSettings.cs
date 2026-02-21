@@ -1,6 +1,6 @@
 namespace DailyLifeMate.Infrastructure.ExternalApis.Jikan.Models;
 
-public class JikanApiSettings
+public record JikanApiSettings
 {
     public const string SectionName = "ExternalApis:Jikan";
 

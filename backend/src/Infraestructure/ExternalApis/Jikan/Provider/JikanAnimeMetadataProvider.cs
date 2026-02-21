@@ -30,6 +30,8 @@ public class JikanAnimeMetadataProvider : IAnimeMetadataProvider
             // Jikan V4 Search Endpoint. Limit to 1 to get the most relevant result.
             var url = $"anime?q={System.Uri.EscapeDataString(name)}&limit=1";
             var response = await _httpClient.GetFromJsonAsync<JikanSearchResponse>(url);
+
+            _logger.LogDebug("Response from Jikan API for {Name}: {Response}", name, response?.Data);
             var topResult = response?.Data.FirstOrDefault();
 
             if (topResult == null)
