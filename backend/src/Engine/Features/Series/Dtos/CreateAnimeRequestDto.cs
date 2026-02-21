@@ -6,6 +6,5 @@ public record CreateAnimeRequestDto
 {
     public required string Name { get; set; }
     public string Description { get; set; } = string.Empty;
-    public uint TotalEpisodes { get; set; }
     public List<string>? ExternalLinks { get; set; }
 }
