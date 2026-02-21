@@ -27,6 +27,9 @@ public class DailyLifeMateDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
             entity.Property(e => e.Description).HasMaxLength(500);
+
+            // Explicitly map IsArchived for Context
+            entity.Property(e => e.IsArchived).HasDefaultValue(false);
         });
 
         // --- PARENT CONFIGURATION (DashboardItem) ---
@@ -38,6 +41,9 @@ public class DailyLifeMateDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).IsRequired().HasMaxLength(255);
             entity.Property(e => e.Description).HasMaxLength(1000);
+
+            // Explicitly map IsArchived for DashboardItem
+            entity.Property(e => e.IsArchived).HasDefaultValue(false);
 
             // Enum Mapping: Store Enums as Strings in the DB (Readable!)
             entity.Property(e => e.Status).HasConversion<string>().HasMaxLength(50);
