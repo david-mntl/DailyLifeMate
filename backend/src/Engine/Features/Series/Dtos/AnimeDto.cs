@@ -10,8 +10,12 @@ public record AnimeDto
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
-    public uint TotalEpisodes { get; set; }
-    public uint CurrentEpisodes { get; set; }
+    public string ImageUrl { get; set; } = string.Empty;
+    public string Synopsis { get; set; } = string.Empty;
+    public DateTime? ReleasedOn { get; set; }
+    public DateTime? NextAirDateUtc { get; set; }
+    public int? TotalEpisodes { get; set; }
+    public int? CurrentAvailableEpisodes { get; set; } // Not going to be implemented yet.
     public string AiringStatus { get; set; } = string.Empty;
     public List<string> Genres { get; set; } = new();
     public List<ExternalLink> ExternalLinks { get; set; } = new();
