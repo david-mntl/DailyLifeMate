@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using DailyLifeMate.Domain.Core.Enums;
 using DailyLifeMate.Domain.Core.Models;
+using DailyLifeMate.Domain.Interfaces;
 using DailyLifeMate.Domain.Persistence;
 using DailyLifeMate.Engine.Features.Series.Dtos;
 using DailyLifeMate.Engine.Features.Series.Exceptions;
@@ -18,16 +19,19 @@ namespace DailyLifeMate.Engine.Features.Series.Services;
 public class AnimeService : IAnimeService
 {
     private readonly IAnimeRepository _animeRepository;
-    private readonly IRepository<Context> _contextRepository; // Need this to find the "Anime" folder
+    private readonly IRepository<Context> _contextRepository;
+    private readonly IAnimeMetadataProvider _metadataProvider;
     private readonly ILogger<AnimeService> _logger;
 
     public AnimeService(
         IAnimeRepository animeRepository,
         IRepository<Context> contextRepository, // Generic repo for the Context entity
+        IAnimeMetadataProvider animeMetadataProvider, // For fetching metadata from external APIs
         ILogger<AnimeService> logger)
     {
         _animeRepository = animeRepository;
         _contextRepository = contextRepository;
+        _metadataProvider = animeMetadataProvider;
         _logger = logger;
     }
 
@@ -37,12 +41,9 @@ public class AnimeService : IAnimeService
 
         try
         {
-            // Abstraction 1: The Repository handles the DB logic (Includes, AsNoTracking, etc.)
             var animes = await _animeRepository.GetAllAsync();
-
             _logger.LogInformation("Retrieved {Count} animes from database.", animes.Count());
 
-            // Abstraction 2: Centralized Mapping
             return animes.Select(MapToDto).ToList();
         }
         catch (Exception ex)
@@ -61,32 +62,16 @@ public class AnimeService : IAnimeService
 
         try
         {
-            // Business Logic: Find the correct "Context" (Folder) for this item
-            // Using the Generic Repository's predicate FindAsync we implemented earlier
             var contexts = await _contextRepository.FindAsync(c => c.Name.Contains("Anime"));
             var animeContext = contexts.FirstOrDefault()
-                ?? throw new Exception("The 'Anime Dashboard' context was not found. Did you run DbInitializer?");
+                ?? throw new Exception("The 'Anime Dashboard' context was not found");
 
-            var anime = new Anime
-            {
-                Id = Guid.NewGuid(),
-                Name = request.Name,
-                ContextId = animeContext.Id,
-                Description = request.Description ?? string.Empty,
-                TotalEpisodes = request.TotalEpisodes,
-                CurrentEpisodes = request.TotalEpisodes, // Default behavior
-                Status = ActivityStatus.Active,
-                ExternalLinks = []
-            };
+            var anime = await AnimeCreationHandlerAsync(request, animeContext.Id);
 
             await _animeRepository.AddAsync(anime);
             await _animeRepository.SaveChangesAsync(); // Commit the transaction
 
             _logger.LogInformation("Successfully created Anime {AnimeName}", anime.Name);
-
-            // Return mapped object (Re-using the mapper)
-            // Note: We pass the context manually here because the 'anime' object 
-            // might not have the .Context navigation property loaded yet after a fresh add.
             return MapToDto(anime, animeContext.Name);
         }
         catch (Exception ex)
@@ -100,10 +85,8 @@ public class AnimeService : IAnimeService
     {
         try
         {
-            // Abstraction 3: GetOrThrow helper to avoid repeating "if null throw"
             var anime = await GetAnimeOrThrowAsync(id);
 
-            // Update Fields
             anime.Name = request.Name;
             anime.Description = request.Description ?? string.Empty;
 
@@ -111,8 +94,6 @@ public class AnimeService : IAnimeService
             {
                 anime.ExternalLinks = request.ExternalLinks;
             }
-
-            // We explicitly call Update, then Save
             await _animeRepository.UpdateAsync(anime);
             await _animeRepository.SaveChangesAsync();
 
@@ -131,8 +112,6 @@ public class AnimeService : IAnimeService
     {
         try
         {
-            // Repositories usually handle "Delete by ID" efficiently
-            // Check if exists first to return false if needed
             if (!await _animeRepository.ExistsAsync(id))
             {
                 _logger.LogWarning("Delete failed: Anime {Id} not found.", id);
@@ -166,6 +145,45 @@ public class AnimeService : IAnimeService
         }
     }
 
+    private async Task<Anime> AnimeCreationHandlerAsync(CreateAnimeRequestDto request, Guid contextId)
+    {
+        var metadata = await _metadataProvider.GetAnimeInfoAsync(request.Name);
+
+        if (metadata != null)
+        {
+            _logger.LogInformation("Successfully retrieved Jikan metadata for Anime: {Title}", request.Name);
+        }
+        else
+        {
+            _logger.LogWarning("No anime metadata found for {Title}. Falling back to manual creation.", request.Name);
+        }
+
+        return new Anime
+        {
+            Id = Guid.NewGuid(),
+            ContextId = contextId,
+
+            // Prioritize API data, fallback to user request
+            Name = metadata?.Title ?? request.Name,
+
+            Description = request.Description,
+
+            Synopsis = metadata?.Synopsis ?? string.Empty,
+            ImageUrl = metadata?.ImageUrl ?? string.Empty,
+
+            TotalEpisodes = metadata?.TotalEpisodes ?? 0,
+            // Right now falling to the same amount of total episodes until we have a better way to track the current available episodes
+            CurrentAvailableEpisodes = metadata?.TotalEpisodes ?? 0,
+
+            ReleasedOn = metadata?.ReleasedOn != null ? DateTime.SpecifyKind(metadata.ReleasedOn.Value, DateTimeKind.Utc) : null,
+            Genres = metadata?.Genres ?? [],
+            AiringStatus = metadata?.Status ?? string.Empty, // E.g., "Finished Airing"
+
+            Status = ActivityStatus.Active, // Active item in the dashboard
+            ExternalLinks = [] // Later links will be added to watch the anime.
+        };
+    }
+
     /// <summary>
     /// Centralizes the logic for "If not found, log and throw 404".
     /// </summary>
@@ -181,12 +199,11 @@ public class AnimeService : IAnimeService
     }
 
     /// <summary>
-    /// Centralizes the Entity -> DTO mapping. 
-    /// Change logic here, and it updates EVERY endpoint.
+    /// Centralizes the Entity -> DTO mapping.
     /// </summary>
     private static AnimeDto MapToDto(Anime anime)
     {
-        // Safe navigation check in case Context wasn't included
+        // Safe navigation check in case Context wasn't included or it is not relevant for the case. Ex: Testing
         var contextName = anime.Context?.Name ?? "Unknown";
         return MapToDto(anime, contextName);
     }
@@ -200,10 +217,14 @@ public class AnimeService : IAnimeService
             Description = anime.Description ?? string.Empty,
             ContextName = contextName,
             TotalEpisodes = anime.TotalEpisodes,
-            CurrentEpisodes = anime.CurrentEpisodes,
-            AiringStatus = anime.AiringStatus, // Ensure your Entity has this property
+            CurrentAvailableEpisodes = anime.CurrentAvailableEpisodes,
+            AiringStatus = anime.AiringStatus,
             Genres = anime.Genres,
-            ExternalLinks = anime.ExternalLinks
+            ExternalLinks = anime.ExternalLinks,
+            ImageUrl = anime.ImageUrl,
+            Synopsis = anime.Synopsis,
+            ReleasedOn = anime.ReleasedOn,
+            NextAirDateUtc = anime.NextAirDateUtc
         };
     }
 }

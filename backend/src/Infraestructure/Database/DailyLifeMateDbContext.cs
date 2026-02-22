@@ -27,6 +27,9 @@ public class DailyLifeMateDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
             entity.Property(e => e.Description).HasMaxLength(500);
+
+            // Explicitly map IsArchived for Context
+            entity.Property(e => e.IsArchived).HasDefaultValue(false);
         });
 
         // --- PARENT CONFIGURATION (DashboardItem) ---
@@ -38,6 +41,9 @@ public class DailyLifeMateDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).IsRequired().HasMaxLength(255);
             entity.Property(e => e.Description).HasMaxLength(1000);
+
+            // Explicitly map IsArchived for DashboardItem
+            entity.Property(e => e.IsArchived).HasDefaultValue(false);
 
             // Enum Mapping: Store Enums as Strings in the DB (Readable!)
             entity.Property(e => e.Status).HasConversion<string>().HasMaxLength(50);
@@ -58,11 +64,10 @@ public class DailyLifeMateDbContext : DbContext
         {
             // Table-Per-Type (TPT): This table shares the SAME ID as DashboardItems
             entity.ToTable("Animes");
+            entity.Property(e => e.Synopsis).HasMaxLength(2000);
+            entity.Property(e => e.ImageUrl).HasMaxLength(500);
+            entity.Property(e => e.CurrentAvailableEpisodes).HasDefaultValue(0);
 
-            // Database Constraints for data integrity
-            entity.Property(e => e.TotalEpisodes).HasDefaultValue(0);
-            entity.Property(e => e.CurrentEpisodes).HasDefaultValue(0);
-            entity.Property(e => e.LastWatchedEpisode).HasDefaultValue(0);
             entity.Property(e => e.AiringStatus).HasMaxLength(50);
 
             // JSONB MAPPING: Storing List<string> genres as a JSON document

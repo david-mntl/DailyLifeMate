@@ -1,13 +1,16 @@
 using System;
 using System.Data.Common;
 using System.Threading.Tasks;
-
-using DailyLifeMate.Infrastructure.Database;
+using System.Linq;
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+
+using DailyLifeMate.Domain.Interfaces;
+using DailyLifeMate.Infrastructure.Database;
 
 using Npgsql;
 
@@ -24,6 +27,24 @@ public class TestServer : WebApplicationFactory<Program>
     public TestServer()
     {
         _connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__Postgres") ?? "";
+    }
+
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        builder.ConfigureTestServices(services =>
+        {
+            // Removing already registered IAnimeMetadataProvider (which is the real one that calls Jikan API)
+            var descriptor = services.SingleOrDefault(
+                d => d.ServiceType == typeof(IAnimeMetadataProvider));
+
+            if (descriptor != null)
+            {
+                services.Remove(descriptor);
+            }
+
+            // Registering Fake Provider in its place
+            services.AddScoped<IAnimeMetadataProvider, FakeAnimeMetadataProvider>();
+        });
     }
 
     public async Task InitializeAsync()

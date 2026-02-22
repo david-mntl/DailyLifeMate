@@ -16,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 // --- Registering app services ---
 builder.Services.AddEngineServices();
 builder.Services.AddRepositories();
+builder.Services.AddProviders(builder.Configuration);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

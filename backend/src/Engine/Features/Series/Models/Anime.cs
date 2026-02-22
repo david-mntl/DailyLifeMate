@@ -16,9 +16,12 @@ public class Anime : DashboardItem
     public DateTime? ReleasedOn { get; set; }
     public DateTime? NextAirDateUtc { get; set; }
 
-    public uint TotalEpisodes { get; set; }
-    public uint CurrentEpisodes { get; set; }
-    public uint LastWatchedEpisode { get; set; }
+    public string Synopsis { get; set; } = string.Empty;
+    public string ImageUrl { get; set; } = string.Empty;
+
+    public int? TotalEpisodes { get; set; }
+    public int CurrentAvailableEpisodes { get; set; }
+    public int? LastWatchedEpisode { get; set; }
 
     public string AiringStatus { get; set; } = string.Empty;
     public List<string> Genres { get; set; } = new();
