@@ -3,6 +3,7 @@ using System;
 using DailyLifeMate.Domain.Core.Models;
 using DailyLifeMate.Domain.Interfaces;
 using DailyLifeMate.Domain.Persistence;
+using DailyLifeMate.Engine.Features.Series.Models;
 using DailyLifeMate.Engine.Features.Series.Services;
 using DailyLifeMate.Infrastructure.ExternalApis.Jikan;
 using DailyLifeMate.Infrastructure.ExternalApis.Jikan.Models;
@@ -25,7 +26,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<IRepository<Context>, Repository<Context>>();
-        services.AddScoped<IAnimeRepository, AnimeRepository>();
+        services.AddScoped<IRepository<Anime>, Repository<Anime>>();
         return services;
     }
 

@@ -20,4 +20,5 @@ public record AnimeDto
     public List<string> Genres { get; set; } = new();
     public List<ExternalLink> ExternalLinks { get; set; } = new();
     public string ContextName { get; set; } = string.Empty;
+    public bool IsArchived { get; set; }
 }
