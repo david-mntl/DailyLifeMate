@@ -22,6 +22,6 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
     && chown -R $USERNAME:$USERNAME /workspace
 
-USER $USERNAME
+USER $USERNAME:$USER_GID
 
 WORKDIR /workspace
