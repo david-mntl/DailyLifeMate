@@ -4,13 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using DailyLifeMate.Domain.Core.Enums;
+using DailyLifeMate.Domain.Core.Exceptions;
 using DailyLifeMate.Domain.Core.Models;
 using DailyLifeMate.Domain.Interfaces;
 using DailyLifeMate.Domain.Persistence;
 using DailyLifeMate.Engine.Features.Series.Dtos;
-using DailyLifeMate.Engine.Features.Series.Exceptions;
 using DailyLifeMate.Engine.Features.Series.Models;
-using DailyLifeMate.Infrastructure.Repositories;
 
 using Microsoft.Extensions.Logging;
 
@@ -43,9 +42,14 @@ public class AnimeService : IAnimeService
         try
         {
             var animes = await _animeRepository.GetAllAsync(a => a.Context);
-            _logger.LogInformation("Retrieved {Count} animes from database.", animes.Count());
+            _logger.LogDebug("Retrieved {Count} animes from database.", animes.Count());
 
             return animes.Select(MapToDto).ToList();
+        }
+        catch (ArgumentNullException ex)
+        {
+            _logger.LogError(ex, "Failed to correctly load anime's context information.");
+            throw;
         }
         catch (Exception ex)
         {
@@ -59,20 +63,24 @@ public class AnimeService : IAnimeService
         if (string.IsNullOrWhiteSpace(request.Name))
             throw new ArgumentException("Name cannot be empty.");
 
-        _logger.LogInformation("Request to create anime: {Name}", request.Name);
+        _logger.LogDebug("Request to create anime: {Name}", request.Name);
 
         try
         {
             var contexts = await _contextRepository.FindAsync(c => c.Name.Contains(DefaultAnimeContextName));
             var animeContext = contexts.FirstOrDefault()
-                ?? throw new Exception("The 'Anime Dashboard' context was not found");
+                ?? throw new NotFoundException(nameof(Context), DefaultAnimeContextName);
 
             var anime = await AnimeCreationHandlerAsync(request, animeContext);
 
-            await _animeRepository.AddAsync(anime);
+            _animeRepository.Add(anime);
             await _animeRepository.SaveChangesAsync(); // Commit the transaction
             _logger.LogInformation("Successfully created Anime {AnimeName}", anime.Name);
             return MapToDto(anime);
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -94,12 +102,16 @@ public class AnimeService : IAnimeService
             {
                 anime.ExternalLinks = request.ExternalLinks;
             }
-            await _animeRepository.UpdateAsync(anime);
+            _animeRepository.Update(anime);
             await _animeRepository.SaveChangesAsync();
 
             _logger.LogInformation("Updated Anime {Id}. Name: {Name}", id, anime.Name);
 
             return MapToDto(anime);
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -137,6 +149,10 @@ public class AnimeService : IAnimeService
         {
             var anime = await GetAnimeOrThrowAsync(id);
             return MapToDto(anime);
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -188,7 +204,7 @@ public class AnimeService : IAnimeService
         if (anime == null)
         {
             _logger.LogWarning("Anime with ID {Id} was not found.", id);
-            throw new AnimeNotFoundException(id);
+            throw new NotFoundException(nameof(Anime), id);
         }
         return anime;
     }
