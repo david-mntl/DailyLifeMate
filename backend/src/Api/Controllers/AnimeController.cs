@@ -3,8 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using DailyLifeMate.Domain.Core.Exceptions;
 using DailyLifeMate.Engine.Features.Series.Dtos;
-using DailyLifeMate.Engine.Features.Series.Exceptions;
 using DailyLifeMate.Engine.Features.Series.Services;
 
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +32,7 @@ public class AnimeController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = ex.Message });
+            return StatusCode(500, new { message = "An internal error occurred.", details = ex.Message });
         }
     }
 
@@ -51,6 +51,7 @@ public class AnimeController : ControllerBase
         }
         catch (Exception ex)
         {
+            // Context not found will be categorized as an internal error.
             return StatusCode(500, new { message = "An internal error occurred.", details = ex.Message });
         }
     }
@@ -63,7 +64,7 @@ public class AnimeController : ControllerBase
             var result = await _animeService.GetAnimeByIdAsync(id);
             return Ok(result);
         }
-        catch (AnimeNotFoundException ex)
+        catch (NotFoundException ex)
         {
             // Return 404 Not Found
             return NotFound(new { message = ex.Message });
@@ -71,7 +72,7 @@ public class AnimeController : ControllerBase
         catch (Exception ex)
         {
             // Internal Server Error
-            return StatusCode(500, new { message = "A server error occurred.", details = ex.Message });
+            return StatusCode(500, new { message = "An internal error occurred.", details = ex.Message });
         }
     }
 
@@ -83,13 +84,13 @@ public class AnimeController : ControllerBase
             var result = await _animeService.UpdateAnimeAsync(id, request);
             return Ok(result);
         }
-        catch (AnimeNotFoundException ex)
+        catch (NotFoundException ex)
         {
             return NotFound(new { message = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = ex.Message });
+            return StatusCode(500, new { message = "An internal error occurred.", details = ex.Message });
         }
     }
 
@@ -109,7 +110,7 @@ public class AnimeController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = ex.Message });
+            return StatusCode(500, new { message = "An internal error occurred.", details = ex.Message });
         }
     }
 }
