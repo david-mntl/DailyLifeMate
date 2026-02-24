@@ -17,7 +17,7 @@
         "type": "process",
         "args": [
           "build",
-          "${workspaceFolder}/src/DailyLifeMate.csproj",
+          "${workspaceFolder}/backend.sln",
           "/property:GenerateFullPaths=true",
           "/consoleloggerparameters:NoSummary"
         ],
@@ -35,7 +35,7 @@
         "preLaunchTask": "build",
         "program": "${workspaceFolder}/src/bin/Debug/net8.0/DailyLifeMate.dll",
         "args": [],
-        "cwd": "${workspaceFolder}/src",
+        "cwd": "${workspaceFolder}/src/bin/Debug/net8.0/",
         "serverReadyAction": {
           "action": "openExternally",
           "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
