@@ -35,6 +35,20 @@ public class AnimeControllerTests : DBSetupFixtureBase
             Description = "A test anime description"
         };
 
+        var expectedDto = new AnimeDto
+        {
+            Name = request.Name,
+            Description = request.Description,
+            TotalEpisodes = FakeAnimeMetadataProvider.FakeTotalEpisodes,
+            CurrentAvailableEpisodes = FakeAnimeMetadataProvider.FakeTotalEpisodes, // Since we set CurrentAvailableEpisodes = TotalEpisodes in the service
+            Synopsis = FakeAnimeMetadataProvider.FakeSynopsis,
+            ImageUrl = FakeAnimeMetadataProvider.FakeImageUrl,
+            AiringStatus = FakeAnimeMetadataProvider.FakeAiringStatus,
+            Genres = FakeAnimeMetadataProvider.FakeGenres,
+            ReleasedOn = FakeAnimeMetadataProvider.FakeReleasedOn,
+            ContextName = AnimeContextName
+        };
+
         // Act
         var response = await _httpClient.PostAsJsonAsync(BaseUrl, request);
         var content = await response.Content.ReadFromJsonAsync<AnimeDto>();
@@ -49,11 +63,7 @@ public class AnimeControllerTests : DBSetupFixtureBase
         content.ContextName.Should().Be(AnimeContextName);
 
         // Assertions proving the AnimeMetadataProvider was called, using our shared constants!
-        content.TotalEpisodes.Should().Be(FakeAnimeMetadataProvider.FakeTotalEpisodes);
-        content.Synopsis.Should().Be(FakeAnimeMetadataProvider.FakeSynopsis);
-        content.ImageUrl.Should().Be(FakeAnimeMetadataProvider.FakeImageUrl);
-        content.AiringStatus.Should().Be(FakeAnimeMetadataProvider.FakeAiringStatus);
-        content.Genres.Should().ContainInOrder(FakeAnimeMetadataProvider.FakeGenres);
+        content.Should().BeEquivalentTo(expectedDto, options => options.Excluding(a => a.Id));
 
         // Verify Record in Database
         var animeInDb = await _dbContext.Animes
@@ -64,9 +74,13 @@ public class AnimeControllerTests : DBSetupFixtureBase
         animeInDb!.Name.Should().Be(request.Name);
         animeInDb.Description.Should().Be(request.Description);
 
-        // Ensure it saved the enriched data to Postgres seamlessly
+        // Ensure it saved the correct data
         animeInDb.TotalEpisodes.Should().Be(FakeAnimeMetadataProvider.FakeTotalEpisodes);
         animeInDb.Synopsis.Should().Be(FakeAnimeMetadataProvider.FakeSynopsis);
+        animeInDb.ImageUrl.Should().Be(FakeAnimeMetadataProvider.FakeImageUrl);
+        animeInDb.AiringStatus.Should().Be(FakeAnimeMetadataProvider.FakeAiringStatus);
+        animeInDb.Genres.Should().BeEquivalentTo(FakeAnimeMetadataProvider.FakeGenres);
+        animeInDb.ReleasedOn.Should().Be(FakeAnimeMetadataProvider.FakeReleasedOn);
     }
 
     [Test]
@@ -75,9 +89,23 @@ public class AnimeControllerTests : DBSetupFixtureBase
         // Arrange
         var request = new CreateAnimeRequestDto
         {
-            // The "NotFound" keyword triggers our FakeAnimeMetadataProvider to return null
+            // The "NotFound" keyword triggers FakeAnimeMetadataProvider to return null
             Name = "Obscure Anime NotFound",
-            Description = "A highly obscure anime that the external API doesn't know about."
+            Description = "Not found test description"
+        };
+
+        var expectedDto = new AnimeDto
+        {
+            Name = request.Name,
+            Description = request.Description,
+            TotalEpisodes = 0,
+            CurrentAvailableEpisodes = 0,
+            Synopsis = string.Empty,
+            ImageUrl = string.Empty,
+            AiringStatus = string.Empty,
+            Genres = new List<string>(),
+            ReleasedOn = null,
+            ContextName = AnimeContextName
         };
 
         // Act
@@ -87,28 +115,18 @@ public class AnimeControllerTests : DBSetupFixtureBase
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         content.Should().NotBeNull();
-        content!.Name.Should().Be(request.Name);
-        content.Description.Should().Be(request.Description);
-
-        // Because the provider failed, these should all default to empty/zero
-        content.TotalEpisodes.Should().Be(0);
-        content.CurrentAvailableEpisodes.Should().Be(0);
-        content.Synopsis.Should().BeEmpty();
-        content.ImageUrl.Should().BeEmpty();
-        content.AiringStatus.Should().BeEmpty();
-        content.Genres.Should().BeEmpty();
-        content.ReleasedOn.Should().BeNull();
+        content.Should().BeEquivalentTo(expectedDto, options => options.Excluding(a => a.Id));
 
         var animeInDb = await _dbContext.Animes
             .AsNoTracking()
-            .FirstOrDefaultAsync(a => a.Id == content.Id);
+            .FirstOrDefaultAsync(a => a.Id == content!.Id);
 
         animeInDb.Should().NotBeNull();
         animeInDb!.Name.Should().Be(request.Name);
         animeInDb.Description.Should().Be(request.Description);
-        animeInDb.TotalEpisodes.Should().Be(0);
-        animeInDb.Synopsis.Should().BeEmpty();
-        animeInDb.Genres.Should().BeEmpty();
+        animeInDb.TotalEpisodes.Should().Be(expectedDto.TotalEpisodes);
+        animeInDb.Synopsis.Should().Be(expectedDto.Synopsis);
+        animeInDb.Genres.Should().BeEquivalentTo(expectedDto.Genres);
     }
 
     [Test]
