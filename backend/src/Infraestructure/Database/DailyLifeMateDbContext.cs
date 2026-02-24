@@ -26,6 +26,7 @@ public class DailyLifeMateDbContext : DbContext
             entity.ToTable("Contexts");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            entity.HasIndex(e => e.Name).IsUnique(); // Enforce unique context names
             entity.Property(e => e.Description).HasMaxLength(500);
 
             // Explicitly map IsArchived for Context
@@ -48,6 +49,10 @@ public class DailyLifeMateDbContext : DbContext
             // Enum Mapping: Store Enums as Strings in the DB (Readable!)
             entity.Property(e => e.Status).HasConversion<string>().HasMaxLength(50);
             entity.Property(e => e.Type).HasConversion<string>().HasMaxLength(50);
+
+            // Enforce unique names WITHIN a specific context
+            entity.HasIndex(e => new { e.ContextId, e.Name })
+                  .IsUnique();
 
             // Storing the List<ExternalLink> as a JSON document
             entity.Property(e => e.ExternalLinks).HasColumnType("jsonb");
