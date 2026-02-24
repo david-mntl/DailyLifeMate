@@ -40,14 +40,14 @@ if docker compose -f "$DOCKER_COMPOSE_FILE" up --build --abort-on-container-exit
     EXIT_CODE=0
     echo ""
     echo "✅ All tests passed!"
+    rm -f "$TEST_LOG_FILE"
 else
     EXIT_CODE=$? 
     echo ""
     echo "❌ Tests failed with exit code: $EXIT_CODE"
     echo "===================================="
+    echo "📊 Full log saved for debugging: $TEST_LOG_FILE"
 fi
-
-echo "📊 Full log: $TEST_LOG_FILE"
 
 # Calling exit will trigger the 'EXIT' trap.
 exit $EXIT_CODE

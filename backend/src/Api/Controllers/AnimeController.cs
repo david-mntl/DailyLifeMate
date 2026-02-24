@@ -7,6 +7,7 @@ using DailyLifeMate.Domain.Core.Exceptions;
 using DailyLifeMate.Engine.Features.Series.Dtos;
 using DailyLifeMate.Engine.Features.Series.Services;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DailyLifeMate.Api.Controllers;
@@ -32,7 +33,7 @@ public class AnimeController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An internal error occurred.", details = ex.Message });
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An internal error occurred.", details = ex.Message });
         }
     }
 
@@ -52,7 +53,7 @@ public class AnimeController : ControllerBase
         catch (Exception ex)
         {
             // Context not found will be categorized as an internal error.
-            return StatusCode(500, new { message = "An internal error occurred.", details = ex.Message });
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An internal error occurred.", details = ex.Message });
         }
     }
 
@@ -72,7 +73,7 @@ public class AnimeController : ControllerBase
         catch (Exception ex)
         {
             // Internal Server Error
-            return StatusCode(500, new { message = "An internal error occurred.", details = ex.Message });
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An internal error occurred.", details = ex.Message });
         }
     }
 
@@ -90,7 +91,7 @@ public class AnimeController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An internal error occurred.", details = ex.Message });
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An internal error occurred.", details = ex.Message });
         }
     }
 
@@ -110,7 +111,7 @@ public class AnimeController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An internal error occurred.", details = ex.Message });
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An internal error occurred.", details = ex.Message });
         }
     }
 }

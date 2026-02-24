@@ -3,6 +3,7 @@ using System;
 using DailyLifeMate.Domain.Core.Models;
 using DailyLifeMate.Domain.Interfaces;
 using DailyLifeMate.Domain.Persistence;
+using DailyLifeMate.Engine.Common.Contexts.Services;
 using DailyLifeMate.Engine.Features.Series.Models;
 using DailyLifeMate.Engine.Features.Series.Services;
 using DailyLifeMate.Infrastructure.ExternalApis.Jikan;
@@ -20,6 +21,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddEngineServices(this IServiceCollection services)
     {
         services.AddScoped<IAnimeService, AnimeService>();
+        services.AddScoped<IContextService, ContextService>();
         return services;
     }
 
