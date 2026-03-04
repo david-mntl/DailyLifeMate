@@ -3,21 +3,35 @@
 @tailwind utilities;
 
 @layer base {
-	  :root {
-	  --background: 240 10% 3.9%;
-	  --foreground: 0 0% 98%;
-	  --card: 240 10% 3.9%;
-	  --card-foreground: 0 0% 98%;
-	  --primary: 263.4 70% 50.4%; /* Purple */
-	  --primary-foreground: 210 20% 98%;
-	  --muted: 240 3.7% 15.9%;
-	  --muted-foreground: 240 5% 64.9%;
-	  --accent: 240 3.7% 15.9%;
-	  --accent-foreground: 0 0% 98%;
-	  --border: 240 3.7% 15.9%;
-	  --input: 240 3.7% 15.9%;
-	  --ring: 263.4 70% 50.4%;
-	}
+  :root {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --primary: 263.4 70% 50.4%; /* Purple */
+    --primary-foreground: 210 20% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 263.4 70% 50.4%;
+    --radius: 0.5rem;
+  }
+
+  /* Force all inputs and text areas to use the theme foreground */
+  input,
+  textarea,
+  select {
+    color: hsl(var(--foreground));
+    background-color: transparent;
+  }
+
+  /* This ensures the cursor/caret is also visible in dark mode */
+  input {
+    caret-color: hsl(var(--primary));
+  }
 }
 
 @layer utilities {
@@ -40,21 +54,43 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 @keyframes zoomIn {
-  from { transform: scale(0.9); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
