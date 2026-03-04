@@ -1,0 +1,20 @@
+
+services:
+  ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dailylifemate-ui-dev
+    command: sleep infinity
+    ports:
+      - "4173:5173"
+    volumes:
+      - ../../:/workspace:cached
+    networks:
+      dailylifemate-ui:
+        aliases:
+          - dailylifemate-dev
+
+networks:
+  dailylifemate-ui:
+    attachable: true

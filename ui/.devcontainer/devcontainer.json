@@ -1,0 +1,51 @@
+{
+  "name": "Anime Dashboard UI Container",
+  "dockerComposeFile": [
+    "docker-compose.dev.yml"
+  ],
+  "service": "ui",
+  "workspaceFolder": "/workspace/ui",
+
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "configureZshAsDefaultShell": true
+    }
+  },
+  
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "editor.formatOnSave": true,
+        // Using Prettier as default formatter for consistent UI styling
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        }, // Ensures Tailwind autocomplete works instantly
+        "tailwindCSS.emmetCompletions": true,
+        "tailwindCSS.includeLanguages": {
+          "typescript": "javascript",
+          "typescriptreact": "javascript"
+        }
+      },
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "bradlc.vscode-tailwindcss",
+        "dsznajder.es7-react-js-snippets",
+        "esbenp.prettier-vscode",
+        "yoavbls.pretty-ts-errors",
+        "usernamehw.errorlens",
+        "formulahendry.auto-rename-tag",
+        "christian-kohler.path-intellisense",
+        "streetsidesoftware.code-spell-checker"
+      ]
+    }
+  },
+
+  "forwardPorts": [],
+
+  "remoteUser": "node",
+  
+  "postCreateCommand": ""
+}
