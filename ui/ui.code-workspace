@@ -1,0 +1,63 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    // --- Code Formatting & Clean Up ---
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    
+    // --- TypeScript Settings ---
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+
+    // --- Tailwind CSS for CVA ---
+    // Because 'class-variance-authority' is being used, Tailwind IntelliSense 
+    // normally breaks inside the cva() function. This regex fixes that so you 
+    // get autocomplete for your Tailwind classes inside your variant definitions!
+    "tailwindCSS.experimental.classRegex": [
+      ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+      ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+    ],
+
+    // --- Workspace Clutter Management ---
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true
+    },
+    "files.exclude": {
+      "**/.git": true,
+      "**/.DS_Store": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "bradlc.vscode-tailwindcss",
+      "dsznajder.es7-react-js-snippets",
+      "esbenp.prettier-vscode",
+      "usernamehw.errorlens"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "chrome",
+        "request": "launch",
+        "name": "Launch Vite App (Chrome)",
+        "url": "http://localhost:4173",
+        "webRoot": "${workspaceFolder}/src",
+        "sourceMapPathOverrides": {
+          "webpack:///src/*": "${webRoot}/*"
+        }
+      }
+    ]
+  }
+}
