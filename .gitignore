@@ -12,6 +12,13 @@ obj/
 .vs/
 .idea/
 
+# UI
+.vite/
+
+# Node
+node_modules/
+
 # --- Environment ---
 .env
 test-logs/
+.log
