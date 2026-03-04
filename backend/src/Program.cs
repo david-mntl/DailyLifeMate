@@ -38,6 +38,15 @@ builder.Services.AddDbContext<DailyLifeMateDbContext>(options =>
     options.UseNpgsql(dataSource);
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowMyUI", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173", "http://localhost:4173", "http://172.20.10.13:4173", "http://172.20.10.13:5173", "dailylifemate-demo:4173", "dailylifemate-demo:5173")
+              .AllowAnyMethod()  // This fixes the 405 OPTIONS error for the moment!
+              .AllowAnyHeader();
+    });
+});
 
 // Running the program
 var app = builder.Build();
@@ -47,6 +56,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors("AllowMyUI");
 }
 
 // app.UseHttpsRedirection();

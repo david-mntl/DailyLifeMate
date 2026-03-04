@@ -20,17 +20,28 @@
     --radius: 0.5rem;
   }
 
-  /* Force all inputs and text areas to use the theme foreground */
-  input,
-  textarea,
-  select {
-    color: hsl(var(--foreground));
-    background-color: transparent;
+  /* GLOBAL FIX FOR VISIBILITY */
+  body {
+    @apply bg-background text-foreground;
   }
 
-  /* This ensures the cursor/caret is also visible in dark mode */
-  input {
-    caret-color: hsl(var(--primary));
+  /* Force Labels to be visible white/grey */
+  label {
+    color: hsl(var(--foreground));
+    @apply opacity-90 font-medium;
+  }
+
+  /* Force Input/Textarea text to be visible white */
+  input,
+  textarea {
+    color: hsl(var(--foreground)) !important;
+    @apply bg-background border-border;
+  }
+
+  /* Fix for placeholders so they aren't too dark */
+  ::placeholder {
+    color: hsl(var(--muted-foreground));
+    opacity: 0.8;
   }
 }
 

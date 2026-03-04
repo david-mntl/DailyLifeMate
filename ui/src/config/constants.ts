@@ -4,6 +4,7 @@ export const API_ROUTES = {
   CONTEXTS: "/context",
   CONTEXT_BY_ID: (id: string) => `/context/${id}`,
   ANIME_BY_CONTEXT: (contextId: string) => `/context/${contextId}/anime`,
+  GET_ALL_ANIME: "/anime",
   ANIME_BY_ID: (contextId: string, animeId: string) =>
     `/context/${contextId}/anime/${animeId}`,
 };
