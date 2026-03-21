@@ -1,12 +1,18 @@
 import FlipCard from "@/components/common/FlipCard";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import MagicCard from "@/components/ui/magic-card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import { AnimeDto } from "@/types";
-import { ExternalLink as ExternalLinkIcon } from "lucide-react";
-import React from "react";
+import {
+  ChevronDown,
+  ChevronUp,
+  ExternalLink as ExternalLinkIcon,
+} from "lucide-react";
+import React, { useState } from "react";
 
 interface AnimeCardProps {
   anime: AnimeDto;
@@ -47,6 +53,8 @@ const AnimeCardFront = ({ anime }: { anime: AnimeDto }) => {
 };
 
 const AnimeCardBack = ({ anime }: { anime: AnimeDto }) => {
+  const [showFullSynopsis, setShowFullSynopsis] = useState(false);
+
   return (
     <Card className="w-full h-full border border-border shadow-xl bg-card overflow-hidden">
       <ScrollArea className="h-full w-full">
@@ -77,10 +85,41 @@ const AnimeCardBack = ({ anime }: { anime: AnimeDto }) => {
 
           {anime.synopsis && (
             <div className="space-y-1">
-              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-tight">
-                Synopsis
-              </h4>
-              <p className="text-sm text-foreground/90 leading-relaxed italic">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-tight">
+                  Synopsis
+                </h4>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowFullSynopsis(!showFullSynopsis);
+                  }}
+                  className="h-auto p-0 text-[10px] text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+                  aria-label={
+                    showFullSynopsis
+                      ? "Show less synopsis"
+                      : "Show more synopsis"
+                  }
+                >
+                  {showFullSynopsis ? (
+                    <>
+                      Show less <ChevronUp className="h-3 w-3" />
+                    </>
+                  ) : (
+                    <>
+                      Show more <ChevronDown className="h-3 w-3" />
+                    </>
+                  )}
+                </Button>
+              </div>
+              <p
+                className={cn(
+                  "text-sm text-foreground/90 leading-relaxed italic",
+                  !showFullSynopsis && "line-clamp-3",
+                )}
+              >
                 {anime.synopsis}
               </p>
             </div>
