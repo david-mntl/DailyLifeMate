@@ -1,98 +1,165 @@
-import { AnimeDto, ExternalLink } from '@/types';
-import { Card, CardContent, CardTitle } from '@/components/ui/card'; // Removed CardFooter, CardHeader
-import { Link as LinkIcon } from 'lucide-react'; // Removed Pencil, Minus, Info, X
-import { cn } from '@/lib/utils';
-// Removed Badge, Tooltip components as they are no longer used in this iteration
+import FlipCard from "@/components/common/FlipCard";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import MagicCard from "@/components/ui/magic-card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
+import { AnimeDto } from "@/types";
+import { ExternalLink as ExternalLinkIcon } from "lucide-react";
+import React from "react";
 
 interface AnimeCardProps {
   anime: AnimeDto;
-  onEdit: (animeId: string) => void; // Keeping for now, but not used in UI
-  onDelete: (animeId: string) => void; // Keeping for now, but not used in UI
+  onEdit?: (animeId: string) => void;
+  onDelete?: (animeId: string) => void;
 }
 
 const DEFAULT_PLACEHOLDER_IMAGE =
-  'https://images.pexels.com/photos/163036/manga-anime-girls-drawing-art-163036.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2';
+  "https://images.pexels.com/photos/163036/manga-anime-girls-drawing-art-163036.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2";
 
-export function AnimeCard({ anime, onEdit, onDelete }: AnimeCardProps) {
-  // Removed showDetails state as details will be displayed directly
+const AnimeCardFront = ({ anime }: { anime: AnimeDto }) => {
+  const handleImgFallback = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    e.currentTarget.src = DEFAULT_PLACEHOLDER_IMAGE;
+  };
 
-  const imageUrl = anime.imageUrl && anime.imageUrl.startsWith('http')
-    ? anime.imageUrl
-    : DEFAULT_PLACEHOLDER_IMAGE;
-
-  const renderExternalLink = (link: ExternalLink) => (
-    <a
-      key={link.url}
-      href={link.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="inline-flex items-center gap-1 text-xs text-primary hover:underline transition-colors"
-    >
-      <LinkIcon className="h-3 w-3" />
-      {link.name}
-    </a>
-  );
+  const imageUrl =
+    anime.imageUrl && anime.imageUrl.startsWith("http")
+      ? anime.imageUrl
+      : DEFAULT_PLACEHOLDER_IMAGE;
 
   return (
-    <Card
-      className="relative group overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 bg-card border-border"
-    >
-      <div className="relative w-full h-48 overflow-hidden">
+    <MagicCard className="border border-border shadow-lg">
+      <div className="relative w-full h-full overflow-hidden flex flex-col">
         <img
           src={imageUrl}
           alt={anime.name}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          onError={handleImgFallback}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 flex items-end">
-          <CardTitle className="text-lg font-bold text-white leading-tight drop-shadow-md">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-6 flex items-end">
+          <CardTitle className="text-xl font-bold text-white leading-tight drop-shadow-lg line-clamp-2">
             {anime.name}
           </CardTitle>
         </div>
       </div>
+    </MagicCard>
+  );
+};
 
-      <CardContent className="p-4 pt-2 space-y-2"> {/* Added space-y-2 for consistent spacing */}
-        {/* Removed genre and airing status badges as per example */}
+const AnimeCardBack = ({ anime }: { anime: AnimeDto }) => {
+  return (
+    <Card className="w-full h-full border border-border shadow-xl bg-card overflow-hidden">
+      <ScrollArea className="h-full w-full">
+        <CardContent className="p-5 space-y-4">
+          <div className="space-y-2">
+            <h3 className="font-bold text-lg text-primary leading-tight">
+              {anime.name}
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {anime.genres && anime.genres.length > 0 && (
+                <Badge
+                  variant="secondary"
+                  className="text-[10px] uppercase tracking-wider"
+                >
+                  {anime.genres[0]}
+                </Badge>
+              )}
+              <Badge
+                variant="outline"
+                className="text-[10px] uppercase tracking-wider"
+              >
+                {anime.totalEpisodes
+                  ? `${anime.currentAvailableEpisodes || 0}/${anime.totalEpisodes} EPS`
+                  : "Episodes Unknown"}
+              </Badge>
+            </div>
+          </div>
 
-        {anime.description && (
-          <p className="text-sm text-muted-foreground line-clamp-3">
-            {anime.description}
-          </p>
-        )}
-
-        {/* Display details directly if they exist */}
-        {(anime.synopsis || anime.releasedOn || anime.nextAirDateUtc || anime.totalEpisodes || (anime.externalLinks && anime.externalLinks.length > 0)) && (
-          <div className="space-y-2 text-sm text-textSecondary mt-4 pt-2 border-t border-border animate-fade-in">
-            {anime.synopsis && (
-              <p>
-                <strong className="text-text">Synopsis:</strong> {anime.synopsis}
+          {anime.synopsis && (
+            <div className="space-y-1">
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-tight">
+                Synopsis
+              </h4>
+              <p className="text-sm text-foreground/90 leading-relaxed italic">
+                {anime.synopsis}
               </p>
-            )}
-            {anime.releasedOn && (
-              <p>
-                <strong className="text-text">Released:</strong> {new Date(anime.releasedOn).toLocaleDateString()}
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-4 pt-2 border-t border-border/50">
+            <div className="space-y-1">
+              <h4 className="text-[10px] font-semibold text-muted-foreground uppercase">
+                Released
+              </h4>
+              <p className="text-xs font-medium">
+                {anime.releasedOn
+                  ? new Date(anime.releasedOn).toLocaleDateString()
+                  : "N/A"}
               </p>
-            )}
+            </div>
             {anime.nextAirDateUtc && (
-              <p>
-                <strong className="text-text">Next Air:</strong> {new Date(anime.nextAirDateUtc).toLocaleDateString()}
-              </p>
-            )}
-            {anime.totalEpisodes && (
-              <p>
-                <strong className="text-text">Episodes:</strong> {anime.currentAvailableEpisodes || 0} / {anime.totalEpisodes}
-              </p>
-            )}
-            {anime.externalLinks && anime.externalLinks.length > 0 && (
-              <div className="flex flex-wrap gap-x-4 gap-y-2 pt-2">
-                <strong className="text-text w-full">Links:</strong>
-                {anime.externalLinks.map(renderExternalLink)}
+              <div className="space-y-1">
+                <h4 className="text-[10px] font-semibold text-muted-foreground uppercase">
+                  Next Air
+                </h4>
+                <p className="text-xs font-medium">
+                  {new Date(anime.nextAirDateUtc).toLocaleDateString()}
+                </p>
               </div>
             )}
           </div>
-        )}
-      </CardContent>
 
-      {/* Removed CardFooter and its buttons as per example */}
+          {anime.externalLinks && anime.externalLinks.length > 0 && (
+            <div className="space-y-2 pt-2 border-t border-border/50">
+              <h4 className="text-[10px] font-semibold text-muted-foreground uppercase">
+                Links
+              </h4>
+              <div className="flex flex-col gap-2">
+                {anime.externalLinks.map((link) => (
+                  <a
+                    key={link.url}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-xs text-primary hover:text-primary/80 hover:underline transition-colors"
+                  >
+                    <ExternalLinkIcon className="h-3 w-3" />
+                    <span className="truncate">{link.name}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </ScrollArea>
     </Card>
+  );
+};
+
+export function AnimeCard({ anime }: AnimeCardProps) {
+  return (
+    <FlipCard
+      front={<AnimeCardFront anime={anime} />}
+      back={<AnimeCardBack anime={anime} />}
+      width="100%"
+      height={420}
+    />
+  );
+}
+
+export function AnimeCardSkeleton() {
+  return (
+    <div className="w-full h-[420px] rounded-xl overflow-hidden border border-border bg-card">
+      <Skeleton className="w-full h-[70%]" />
+      <div className="p-4 space-y-3">
+        <Skeleton className="h-6 w-3/4" />
+        <Skeleton className="h-4 w-1/2" />
+        <div className="pt-4 space-y-2">
+          <Skeleton className="h-3 w-full" />
+          <Skeleton className="h-3 w-full" />
+          <Skeleton className="h-3 w-2/3" />
+        </div>
+      </div>
+    </div>
   );
 }
