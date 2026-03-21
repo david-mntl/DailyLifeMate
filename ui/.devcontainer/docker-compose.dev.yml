@@ -1,4 +1,3 @@
-
 services:
   ui:
     build:
@@ -10,6 +9,8 @@ services:
       - "4173:5173"
     volumes:
       - ../../:/workspace:cached
+    extra_hosts:
+      - "dailylifemate-demo:host-gateway"
     networks:
       dailylifemate-ui:
         aliases:

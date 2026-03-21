@@ -17,6 +17,8 @@ services:
     volumes:
       - ../../:/workspace:cached
       - nuget_cache:/root/.nuget/packages
+    extra_hosts:
+      - "dailylifemate-demo:host-gateway"
     networks:
       dailylifemate:
         aliases:

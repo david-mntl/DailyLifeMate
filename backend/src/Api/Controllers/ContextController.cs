@@ -58,6 +58,25 @@ public class ContextController : ControllerBase
         }
     }
 
+    [HttpGet("{id:guid}/animes")]
+    public async Task<IActionResult> GetAnimeByContextId(Guid id)
+    {
+        try
+        {
+            var context = await _contextService.GetByIdAsync(id);
+            return Ok(context);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to fetch context with ID {Id}.", id);
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An internal error occurred.", details = ex.Message });
+        }
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateContextRequestDto request)
     {

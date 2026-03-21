@@ -27,6 +27,7 @@ public class ContextService : IContextService
 
     public async Task<List<ContextDto>> GetAllAsync()
     {
+        _logger.LogDebug("Fetching all contexts from the database.");
         var contexts = await _contextRepository.GetAllAsync();
         return contexts.Select(MapToDto).ToList();
     }
@@ -58,6 +59,7 @@ public class ContextService : IContextService
 
     public async Task<ContextDto> UpdateAsync(Guid id, UpdateContextRequestDto request)
     {
+        _logger.LogDebug("Trying to update context {Name}", request.Name);
         var context = await GetContextOrThrowAsync(id, request.Name);
 
         context.Name = request.Name;
@@ -74,6 +76,7 @@ public class ContextService : IContextService
 
     public async Task DeleteAsync(Guid id)
     {
+        _logger.LogDebug("Trying to delete context {Id}", id);
         var context = await GetContextOrThrowAsync(id);
 
         await _contextRepository.DeleteAsync(context.Id);
