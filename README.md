@@ -65,7 +65,7 @@ DAILYLIFEMATE/
     ├── .devcontainer/    # Docker-based dev environment
     ├── src/              # Components, pages, hooks, services
     ├── docs/             # Contains the soul/context of the project for AI use purposes
-    ├── .cline-rules/     # AI development rules & skills
+    ├── .cline-rules/     # AI development rules
     └── .cline-skills/    # AI development skills
 ```
 
