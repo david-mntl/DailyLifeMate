@@ -124,7 +124,7 @@ export function DashboardView() {
           className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2 rounded-lg shadow-md transition-all duration-200 ease-in-out transform hover:scale-105"
         >
           <Plus className="h-5 w-5" />
-          Add Anime
+          Add
         </Button>
       </header>
       {showDescription && currentContext.description && (

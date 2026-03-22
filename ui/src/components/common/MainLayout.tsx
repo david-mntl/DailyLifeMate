@@ -41,7 +41,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         {/* Top Header Bar - flex-shrink-0 keeps it from squishing */}
         <header className="flex-shrink-0 h-16 bg-card/50 backdrop-blur-md border-b border-border/50 flex items-center px-6 shadow-md z-50">
           <h1 className="text-2xl font-extrabold text-primary animate-fade-in">
-            Anime Dashboard
+            DailyLifeMate
           </h1>
         </header>
 
