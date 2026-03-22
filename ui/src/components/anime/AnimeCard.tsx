@@ -54,6 +54,7 @@ const AnimeCardFront = ({ anime }: { anime: AnimeDto }) => {
 
 const AnimeCardBack = ({ anime }: { anime: AnimeDto }) => {
   const [showFullSynopsis, setShowFullSynopsis] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
   return (
     <Card className="w-full h-full border border-border shadow-xl bg-card overflow-hidden">
@@ -63,14 +64,27 @@ const AnimeCardBack = ({ anime }: { anime: AnimeDto }) => {
             <h3 className="font-bold text-lg text-primary leading-tight">
               {anime.name}
             </h3>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1">
               {anime.genres && anime.genres.length > 0 && (
-                <Badge
-                  variant="secondary"
-                  className="text-[10px] uppercase tracking-wider"
-                >
-                  {anime.genres[0]}
-                </Badge>
+                <>
+                  {anime.genres.slice(0, 3).map((genre) => (
+                    <Badge
+                      key={genre}
+                      variant="secondary"
+                      className="text-[10px] uppercase tracking-wider"
+                    >
+                      {genre}
+                    </Badge>
+                  ))}
+                  {anime.genres.length > 3 && (
+                    <Badge
+                      variant="secondary"
+                      className="text-[10px] uppercase tracking-wider opacity-60"
+                    >
+                      +{anime.genres.length - 3} more
+                    </Badge>
+                  )}
+                </>
               )}
               <Badge
                 variant="outline"
@@ -136,6 +150,14 @@ const AnimeCardBack = ({ anime }: { anime: AnimeDto }) => {
                   : "N/A"}
               </p>
             </div>
+            {anime.airingStatus && (
+              <div className="space-y-1">
+                <h4 className="text-[10px] font-semibold text-muted-foreground uppercase">
+                  Status
+                </h4>
+                <p className="text-xs font-medium">{anime.airingStatus}</p>
+              </div>
+            )}
             {anime.nextAirDateUtc && (
               <div className="space-y-1">
                 <h4 className="text-[10px] font-semibold text-muted-foreground uppercase">
@@ -147,6 +169,48 @@ const AnimeCardBack = ({ anime }: { anime: AnimeDto }) => {
               </div>
             )}
           </div>
+
+          {anime.description && (
+            <div className="space-y-1 pt-2 border-t border-border/50">
+              <div className="flex items-center justify-between">
+                <h4 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-tight">
+                  Description
+                </h4>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowFullDescription(!showFullDescription);
+                  }}
+                  className="h-auto p-0 text-[10px] text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+                  aria-label={
+                    showFullDescription
+                      ? "Show less description"
+                      : "Show more description"
+                  }
+                >
+                  {showFullDescription ? (
+                    <>
+                      Show less <ChevronUp className="h-3 w-3" />
+                    </>
+                  ) : (
+                    <>
+                      Show more <ChevronDown className="h-3 w-3" />
+                    </>
+                  )}
+                </Button>
+              </div>
+              <p
+                className={cn(
+                  "text-sm text-foreground/90 leading-relaxed",
+                  !showFullDescription && "line-clamp-3",
+                )}
+              >
+                {anime.description}
+              </p>
+            </div>
+          )}
 
           {anime.externalLinks && anime.externalLinks.length > 0 && (
             <div className="space-y-2 pt-2 border-t border-border/50">
