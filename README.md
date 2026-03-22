@@ -10,9 +10,27 @@ DailyLifeMate is a **premium, topic-based dashboard platform** that lets users c
 
 The core idea is simple but powerful: **stop hunting across tabs and apps**. Everything lives in one dashboard, organized by topic, accessible in one click.
 
+**What sparked this project:** As an anime fan watching up to 8 series per season, I kept running into the same frustration — new episodes drop on different days across Crunchyroll, Netflix, Amazon Prime, etc, and there was no single place to track them all. DailyLifeMate started as a solution to that: one dashboard where I can see every anime I'm following, know when the next episode drops, and reach it in no more than 3–4 clicks. What began as a personal tool quickly became a platform concept — the same idea applies to any content scattered across the web.
+
 This project serves a dual purpose:
 1. **A real-world sandbox** to learn and apply modern AI-assisted development techniques — including multi-agent orchestration workflows.
 2. **A showcase** of full-stack engineering capabilities: microservices, containerization, API design, and modern frontend architecture.
+
+---
+
+## 🎬 Preview
+
+### Dashboard & Card Flip
+> The Anime Dashboard displaying auto-fetched cover art for each title. Click any card to flip it and reveal its full metadata - synopsis, episode count, genre tags, and release date — pulled live from MyAnimeList via the Jikan API.
+
+https://github.com/user-attachments/assets/e02043dd-c06a-4277-b0c4-24878f8cd28f
+
+---
+
+### Adding an Anime & Cosmic Background
+> Type any anime title, confirm and the card appears fully populated with no manual input. Information is retrieved using the Jikan API. The ambient cosmic background runs on a vanilla Canvas 2D animation loop with zero library overhead.
+
+https://github.com/user-attachments/assets/7c595c7d-3129-4867-acd4-1f99f8a3843d
 
 ---
 
