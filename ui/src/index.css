@@ -4,11 +4,11 @@
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
+    --background: transparent;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
-    --primary: 263.4 70% 50.4%; /* Purple */
+    --primary: 288 72% 56%;
     --primary-foreground: 210 20% 98%;
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;

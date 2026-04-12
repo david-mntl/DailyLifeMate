@@ -1,14 +1,29 @@
 import { AddAnimeModal } from "@/components/anime/AddAnimeModal";
-import { AnimeCard } from "@/components/anime/AnimeCard";
+import { AnimeCard, AnimeCardSkeleton } from "@/components/anime/AnimeCard";
 import { EditAnimeModal } from "@/components/anime/EditAnimeModal";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAnime } from "@/hooks/query/useAnime";
 import { useContexts } from "@/hooks/query/useContexts";
-import { AnimeDto } from "@/types";
+import { AnimeDto, ContextDto } from "@/types";
+import { motion } from "framer-motion";
 import { ChevronDown, ChevronUp, Plus } from "lucide-react";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+};
 
 export function DashboardView() {
   const { contextId } = useParams<{ contextId: string }>();
@@ -23,7 +38,6 @@ export function DashboardView() {
     isLoading: isLoadingAnime,
     isError: isErrorAnime,
     error: errorAnime,
-    deleteAnime,
   } = useAnime(contextId || "");
 
   const [showDescription, setShowDescription] = useState(false);
@@ -31,36 +45,37 @@ export function DashboardView() {
   const [isEditAnimeModalOpen, setIsEditAnimeModalOpen] = useState(false);
   const [animeToEdit, setAnimeToEdit] = useState<AnimeDto | null>(null);
 
-  const currentContext = contexts?.find((c) => c.id === contextId);
+  const currentContext = (contexts as ContextDto[] | undefined)?.find(
+    (c) => c.id === contextId,
+  );
 
   const handleAddAnime = () => {
     setIsAddAnimeModalOpen(true);
   };
 
   const handleEditAnime = (animeId: string) => {
-    const anime = animeItems?.find((a) => a.id === animeId);
+    const anime = (animeItems as AnimeDto[] | undefined)?.find(
+      (a) => a.id === animeId,
+    );
     if (anime) {
       setAnimeToEdit(anime);
       setIsEditAnimeModalOpen(true);
     }
   };
 
-  const handleDeleteAnime = (animeId: string) => {
-    if (window.confirm("Are you sure you want to delete this anime?")) {
-      deleteAnime(animeId);
-    }
-  };
-
   if (isLoadingContexts) {
     return (
       <div className="p-8 pt-4">
-        {" "}
-        {/* Adjusted padding for top header */}
         <Skeleton className="h-10 w-1/2 mb-6" />
         <Skeleton className="h-6 w-1/3 mb-8" />
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div
+          className="grid gap-5"
+          style={{
+            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+          }}
+        >
           {[...Array(8)].map((_, i) => (
-            <Skeleton key={i} className="h-80 rounded-xl" />
+            <AnimeCardSkeleton key={i} />
           ))}
         </div>
       </div>
@@ -70,8 +85,6 @@ export function DashboardView() {
   if (isErrorContexts || !currentContext) {
     return (
       <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)] text-center text-destructive p-8">
-        {" "}
-        {/* Adjusted height for fixed header */}
         <h2 className="text-3xl font-bold mb-4">Dashboard Not Found</h2>
         <p className="text-lg text-muted-foreground">
           {errorContexts?.message ||
@@ -83,11 +96,9 @@ export function DashboardView() {
 
   return (
     <div className="p-8 pt-4">
-      {" "}
-      {/* Adjusted padding for top header */}
       <header className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 pb-4 border-b border-border">
         <div className="flex items-center gap-4 mb-4 md:mb-0">
-          <h1 className="text-4xl font-extrabold text-primary-foreground animate-fade-in">
+          <h1 className="text-4xl font-extrabold text-primary leading-tight animate-fade-in">
             {currentContext.name}
           </h1>
           {currentContext.description && (
@@ -113,7 +124,7 @@ export function DashboardView() {
           className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2 rounded-lg shadow-md transition-all duration-200 ease-in-out transform hover:scale-105"
         >
           <Plus className="h-5 w-5" />
-          Add Anime
+          Add
         </Button>
       </header>
       {showDescription && currentContext.description && (
@@ -122,9 +133,14 @@ export function DashboardView() {
         </p>
       )}
       {isLoadingAnime ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div
+          className="grid gap-5"
+          style={{
+            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+          }}
+        >
           {[...Array(8)].map((_, i) => (
-            <Skeleton key={i} className="h-80 rounded-xl" />
+            <AnimeCardSkeleton key={i} />
           ))}
         </div>
       ) : isErrorAnime ? (
@@ -135,17 +151,22 @@ export function DashboardView() {
               "An error occurred while fetching anime for this dashboard."}
           </p>
         </div>
-      ) : animeItems && animeItems.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {animeItems.map((anime) => (
-            <AnimeCard
-              key={anime.id}
-              anime={anime}
-              onEdit={handleEditAnime}
-              onDelete={handleDeleteAnime}
-            />
+      ) : animeItems && (animeItems as AnimeDto[]).length > 0 ? (
+        <motion.div
+          className="grid gap-5"
+          style={{
+            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+          }}
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          {(animeItems as AnimeDto[]).map((anime) => (
+            <motion.div key={anime.id} variants={cardVariants}>
+              <AnimeCard anime={anime} onEdit={handleEditAnime} />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       ) : (
         <div className="flex flex-col items-center justify-center h-64 text-center text-muted-foreground">
           <h3 className="text-2xl font-bold mb-2">No Anime Yet!</h3>

@@ -1,3 +1,4 @@
+import CosmicBackground from "@/components/common/CosmicBackground";
 import { MainLayout } from "@/components/common/MainLayout";
 import { DashboardView } from "@/components/dashboard/DashboardView";
 import { Toaster } from "@/components/ui/toaster";
@@ -9,12 +10,13 @@ import background from "@/resources/background-pic.jpg";
 function App() {
   return (
     <>
+      <CosmicBackground />
       <Routes>
         <Route
           path="/"
           element={
             <MainLayout>
-              <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground p-8">
+              <div className="flex flex-col items-center justify-center min-h-screen bg-transparent text-foreground p-8">
                 <h1 className="text-5xl font-extrabold text-primary mb-4 animate-fade-in tracking-tight">
                   Welcome to Anime Dashboard
                 </h1>

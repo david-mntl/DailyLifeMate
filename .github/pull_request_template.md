@@ -1,12 +1,10 @@
-## Summary
-<!-- Brief, high-level description of what this PR does. -->
-<!-- Why this change is needed -->
-<!-- What problem does it solve -->
+## What does this PR do?
+<!-- One sentence.  -->
 
-## Breaking Changes
 
-## Design / Implementation Notes
-<!-- Important decisions -->
+## Changes
+<!-- Brief bullet list of what changed -->
+- 
 
-## How to Test
-<!-- Steps to verify the change: -->
+## Notes
+<!-- Anything worth remembering: gotchas, deferred decisions, follow-up tasks -->

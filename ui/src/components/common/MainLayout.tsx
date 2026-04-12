@@ -37,11 +37,11 @@ export function MainLayout({ children }: MainLayoutProps) {
   return (
     <TooltipProvider>
       {/* Container locked to viewport height to prevent white gaps */}
-      <div className="flex flex-col h-screen w-full overflow-hidden bg-background text-foreground">
+      <div className="flex flex-col h-screen w-full overflow-hidden bg-transparent text-foreground relative z-10">
         {/* Top Header Bar - flex-shrink-0 keeps it from squishing */}
-        <header className="flex-shrink-0 h-16 bg-card border-b border-border flex items-center px-6 shadow-md z-50">
+        <header className="flex-shrink-0 h-16 bg-card/50 backdrop-blur-md border-b border-border/50 flex items-center px-6 shadow-md z-50">
           <h1 className="text-2xl font-extrabold text-primary animate-fade-in">
-            Anime Dashboard
+            DailyLifeMate
           </h1>
         </header>
 
@@ -50,7 +50,7 @@ export function MainLayout({ children }: MainLayoutProps) {
           {/* Sidebar - Using flex instead of fixed to avoid layout gaps */}
           <aside
             className={cn(
-              "flex flex-col bg-card border-r border-border shadow-xl transition-all duration-300 ease-in-out",
+              "flex flex-col bg-card/30 backdrop-blur-sm border-r border-border/50 shadow-xl transition-all duration-300 ease-in-out",
               isSidebarOpen ? "w-64" : "w-16",
             )}
           >
@@ -113,7 +113,7 @@ export function MainLayout({ children }: MainLayoutProps) {
                 <div className="text-destructive text-sm text-center p-2">
                   {error?.message || "Failed to load"}
                 </div>
-              ) : contexts && contexts.length > 0 ? (
+              ) : Array.isArray(contexts) && contexts.length > 0 ? (
                 contexts.map((context) => (
                   <NavLink
                     key={context.id}
@@ -159,7 +159,7 @@ export function MainLayout({ children }: MainLayoutProps) {
           </aside>
 
           {/* Main Content - Flex-1 takes up all remaining space */}
-          <main className="flex-1 overflow-y-auto bg-background relative">
+          <main className="flex-1 overflow-y-auto bg-transparent relative">
             {children}
           </main>
         </div>
