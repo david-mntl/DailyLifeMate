@@ -22,7 +22,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    user: "1000:1000"
     environment:
       ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=daily_life_mate_test;Username=postgres;Password=postgres"
     command: dotnet test /workspace/tests/Integration/DailyLifeMate.Integration.csproj --logger "console;verbosity=normal" --configuration Release
