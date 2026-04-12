@@ -16,6 +16,10 @@ that a Gemini Flash executor agent can implement without ambiguity.
 4. **Centralized Constants:** No magic strings or numbers. All API routes in a config file.
 5. **Accessibility:** Every interactive element must have a keyboard trigger (Space/Enter), correct `role` attribute, and a visible focus ring. Plan these alongside state logic.
 
+## Output structure:
+
+Create `docs/ARCH_PLAN.md` or overwrite it if exists already. Add all your produced answer to this file.
+
 ## 📋 Standard Output Format (Required)
 
 All plans in `docs/ARCH_PLAN.md` must follow this structure:
